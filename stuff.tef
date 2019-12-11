@@ -1,0 +1,125 @@
+=narration
+$content/type: text/plain
+
+Hi, and welcome to this TEF file of random stuff.
+
+=log 2019-12-11
+$content/type: text/plain
+
+I want to be able to edit parts of .tef files as org files.
+Maybe I can do this with narrowing: https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html
+
+So we can use
+
+  'C-x n n' or '(narrow-to-region)'
+
+to narrow to the region, and
+
+  'C-x n w' or '(widen)' to get back out of it.
+
+https://superuser.com/questions/835541/in-emacs-edit-section-of-file-as-if-it-was-a-separate-file
+
+=log 2019-12-11T10:39:35-06:00
+
+Blah blah, stuff about 'artifacts as data source'.
+'artifact' meaning 'file', basically.
+And you can build up a database from a bunch of files.
+The database can be rebuilt any time.
+
+
+=quote
+collected: 2019-12-11
+source-name: Alan Watts
+source-ref: https://www.youtube.com/watch?v=h6r7NTLmN0I
+
+Money doesn't buy pleasure, ever.  You need skill.
+
+
+=example An org-formatted entry
+$content/type: text/org
+
+** Header 2
+*** Header 3
+
+Hopefully this doesn't mess
+
+
+=example An different org-formatted entry, with a table
+$content/type: text/org
+comment: It's tricky to edit org tables without being in org-mode.
+comment: Therefore I'd like to be able to easily edit org chunks within TEF files!
+
+| A table               | Yes      |
+|-----------------------+----------|
+| asd                   |          |
+| More stuff            | oh yeah! |
+| Let's add another row | 42       |
+
+
+=program
+language: elisp
+comment: With this handy function maybe I can edit my org entries easier
+
+(defun edit-region-as-org ()
+  (interactive)
+  (call-interactively 'narrow-to-region)
+  (call-interactively 'org-mode))
+
+(defun tef-edit-entry-as-org ()
+  (interactive)
+  (let ((original-point (point)))
+    (search-backward-regexp "^=\\|\\`")
+    (search-forward-regexp "^$") ; Find the blank line!
+    (forward-char) ; And then go to the beginning of the next one
+    (push-mark)
+    (search-forward-regexp "^=\\|\\'")
+    (search-backward-regexp "^")
+    (sit-for 0.5)
+    (edit-region-as-org)
+    (pop-mark)
+    (goto-char original-point)
+    (message "Use 'C-x n w' to get back out of here!")))
+
+(defun tef-mode ()
+  (interactive)
+  (local-set-key (kbd "C-c C-e e o") 'tef-edit-entry-as-org)) ; TODO this should be customizable I think, or be a menu system thing
+
+=log 2019-12-11T13:12:15-06:00
+
+Ooh, this person's doing something similar to what I am.
+https://emacs.stackexchange.com/questions/2191/copy-contents-of-current-buffer-in-a-temp-buffer-and-operate-on-that
+
+Maybe I actually want an 'indirect buffer', not a 'narrowed' one.
+
+And oh, there should be a command in TEF mode that runs certain elisp
+sections marked in a certain way to get you in the mood.
+I would run it by default except that would be a huge vulnerability.
+I could use that for my exercise log file.
+
+=log 2019-12-11T13:39:08-06:00
+
+$content/type, $content/$encoding headers.
+
+Dollar sign indicates that these fields are 'syntactic', i.e. referring to the TEF entry
+rather than the object being represented by it,
+since non-$ headers are application-defined.
+
+Similarly, a 'comment' header would be passed on to the application,
+whereas '$comment' is about the TEF encoding of the object
+(though '#'-prefixed lines would accomplish the same thing).
+And a '=$narration' entry is TEF-level narration.
+
+In general, '$'-prefixed entry types and attributes should
+not be presented to the application, with the exception of '$content',
+which is only named as such because its meaning is application-defined,
+and so we can't give it a good name.
+
+=quote
+collected: 2019-12-11T13:48:00-06:00
+source-name: Emacs documentation
+source-ref: https://www.gnu.org/software/emacs/manual/html_node/elisp/Major-Mode-Conventions.html#Major-Mode-Conventions
+
+The key sequences bound in a major mode keymap should usually start
+with C-c, followed by a control character, a digit, or {, }, <, >, :
+or ;. The other punctuation characters are reserved for minor modes,
+and ordinary letters are reserved for users.
