@@ -1,10 +1,10 @@
 =narration
-$content/type: text/plain
+$text/type: text/plain
 
 Hi, and welcome to this TEF file of random stuff.
 
 =log 2019-12-11
-$content/type: text/plain
+$text/type: text/plain
 
 I want to be able to edit parts of .tef files as org files.
 Maybe I can do this with narrowing: https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html
@@ -36,7 +36,7 @@ Money doesn't buy pleasure, ever.  You need skill.
 
 
 =example An org-formatted entry
-$content/type: text/org
+$text/type: text/org
 
 ** Header 2
 *** Header 3
@@ -45,7 +45,7 @@ Hopefully this doesn't mess
 
 
 =example An different org-formatted entry, with a table
-$content/type: text/org
+$text/type: text/org
 comment: It's tricky to edit org tables without being in org-mode.
 comment: Therefore I'd like to be able to easily edit org chunks within TEF files!
 
@@ -85,7 +85,7 @@ comment: With this handy function maybe I can edit my org entries easier
   (interactive)
   (kill-all-local-variables)
   (setq major-mode 'tef-mode)
-  (local-set-key (kbd "C-c C-e e o") 'tef-edit-entry-as-org)) ; TODO this should be customizable I think, or be a menu system thing
+  (local-set-key (kbd "C-c C-e e o") 'tef-edit-entry-as-org))
 
 (add-to-list 'auto-mode-alist '("\\.tef\\'" . tef-mode))
 
@@ -102,24 +102,54 @@ I would run it by default except that would be a huge vulnerability.
 I could use that for my exercise log file.
 
 =log 2019-12-11T13:39:08-06:00
+$text/type: text/org
 
-$content/type, $content/$encoding headers.
+~$text~, ~$text/type~, ~$text/$encoding~ headers.
 
-Dollar sign indicates that these fields are 'syntactic', i.e. referring to the TEF entry
-rather than the object being represented by it,
-since non-$ headers are application-defined.
+Dollar sign indicates that these fields are 'syntactic',
+they are about the TEF representation of an object,
+rather than the object itself.
+This kind of jives with "$ref" having special meaning in JSON objects
+and "$"-prefixed 'special' properties in the Homie MQTT convention
+(though I think Homie went overboard with the dollar signs).
 
 Similarly, a 'comment' header would be passed on to the application,
 whereas '$comment' is about the TEF encoding of the object
 (though '#'-prefixed lines would accomplish the same thing).
 And a '=$narration' entry is TEF-level narration.
 
-In general, '$'-prefixed entry types and attributes should
-not be presented to the application, with the exception of '$content',
-which is only named as such because its meaning is application-defined,
-and so we can't give it a good name.
+Conceptually, every attribute also has a '$text' sub-property,
+which is the textual representation of the property's value
+(the conceptual property value might not actually be text;
+it might be a number or some other object or abstract concept).
+Which might itself have ~type~, ~$encoding~, etc properties.
+For purposes of simplicity we can leave that implied, though.
 
-=quote
+In general, "$"-prefixed entry types and attributes should
+not be presented to the application, with the exception of ~$text~,
+which is the 'primary content' of an entry, whose meaning is application-defined,
+so can't be given a good name
+(for a log entry, 'content' might be descriptive, but for a description
+of a physical object, 'notes' might make more sense.
+Hence using a "$" to make it clear that the "$text"
+is referring to 'text' at the syntactic level).
+
+~$encoding~ is special because it indicates that the text that appears
+in the TEF stream is not the true text, but the text after being encoded,
+and so it must be decoded to get the true text.
+
+~type~ is just metadata, and so is not special,
+though it may be common.
+
+~$ref~, similar to its use in JSON, indicates a reference to a value.
+e.g.
+
+#+BEGIN_EXAMPLE
+=image
+short-description: A picture of moldy raspberries
+$ref: http://picture-files.nuke24.net/uri-res/raw/urn:sha1:XEYFSA6XVNL2XY2HROTTJ3RLNVG3JRPT/195012-IMG_4527.JPG
+thumbnails/128/$ref: http://lh3.googleusercontent.com/FbRBzwah7iZ7NxbRe8Hr4PU3X3X-eWAEZGsRdnnIlO3c3lVoJdLSFJBZbHCIM_PJ2V_7t173rFXbGoBxkqoT=s128
+#+END_EXAMPLE=quote
 collected: 2019-12-11T13:48:00-06:00
 source-name: Emacs documentation
 source-ref: https://www.gnu.org/software/emacs/manual/html_node/elisp/Major-Mode-Conventions.html#Major-Mode-Conventions
@@ -128,3 +158,30 @@ The key sequences bound in a major mode keymap should usually start
 with C-c, followed by a control character, a digit, or {, }, <, >, :
 or ;. The other punctuation characters are reserved for minor modes,
 and ordinary letters are reserved for users.
+
+
+
+=task
+status: todo
+$text/type: text/org
+
+the tef-mode keybindings should be customizable I think, or be a menu system thing.
+
+Keys should be defined using ~use-local-map~
+
+=task
+status: todo
+
+tef-mode should say "TEF" or something
+
+
+=task
+status: done
+
+Use an indirect buffer for editing entry as org.
+
+
+=task
+status: todo
+
+Fix up TEF mode more.
