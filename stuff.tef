@@ -1,10 +1,10 @@
 =narration
-$text/type: text/plain
+$content/$format: text/plain
 
 Hi, and welcome to this TEF file of random stuff.
 
 =log 2019-12-11
-$text/type: text/plain
+$content/$format: text/plain
 
 I want to be able to edit parts of .tef files as org files.
 Maybe I can do this with narrowing: https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html
@@ -36,7 +36,7 @@ Money doesn't buy pleasure, ever.  You need skill.
 
 
 =example An org-formatted entry
-$text/type: text/org
+$content/$format: text/org
 
 ** Header 2
 *** Header 3
@@ -45,7 +45,7 @@ Hopefully this doesn't mess
 
 
 =example An different org-formatted entry, with a table
-$text/type: text/org
+$content/$format: text/org
 comment: It's tricky to edit org tables without being in org-mode.
 comment: Therefore I'd like to be able to easily edit org chunks within TEF files!
 
@@ -102,9 +102,9 @@ I would run it by default except that would be a huge vulnerability.
 I could use that for my exercise log file.
 
 =log 2019-12-11T13:39:08-06:00
-$text/type: text/org
+$content/$format: text/org
 
-~$text~, ~$text/type~, ~$text/$encoding~ headers.
+~$content~, ~$content/$format~, ~$content/$encoding~ headers.
 
 Dollar sign indicates that these fields are 'syntactic',
 they are about the TEF representation of an object,
@@ -118,21 +118,14 @@ whereas '$comment' is about the TEF encoding of the object
 (though '#'-prefixed lines would accomplish the same thing).
 And a '=$narration' entry is TEF-level narration.
 
-Conceptually, every attribute also has a '$text' sub-property,
-which is the textual representation of the property's value
-(the conceptual property value might not actually be text;
-it might be a number or some other object or abstract concept).
-Which might itself have ~type~, ~$encoding~, etc properties.
-For purposes of simplicity we can leave that implied, though.
-
 In general, "$"-prefixed entry types and attributes should
-not be presented to the application, with the exception of ~$text~,
+not be presented to the application, with the exception of ~$content~,
 which is the 'primary content' of an entry, whose meaning is application-defined,
 so can't be given a good name
 (for a log entry, 'content' might be descriptive, but for a description
 of a physical object, 'notes' might make more sense.
-Hence using a "$" to make it clear that the "$text"
-is referring to 'text' at the syntactic level).
+Hence using a "$" to make it clear that the "$content"
+is referring to 'content' at the syntactic level).
 
 ~$encoding~ is special because it indicates that the text that appears
 in the TEF stream is not the true text, but the text after being encoded,
@@ -160,10 +153,38 @@ or ;. The other punctuation characters are reserved for minor modes,
 and ordinary letters are reserved for users.
 
 
+=attribute http://ns.nuke24.net/TEF/content
+
+The content of a TEF entry.
+
+=#attribute http://ns.nuke24.net/TEF/text
+short-name: $text
+
+The text representation of any given value (of any header or of $content).
+Implied in TEF syntax, except to explicitly indicate metadata about text, e.g.
+with a header 'some-property/$text/$format'.
+
+This needs more thought.
+It might be that in cases where the textual representation of a property
+is not itself the conceptual value of the property,
+that associating metadata with the text is silly.
+
+=attribute http://ns.nuke24.net/TEF/content
+short-name: $content
+
+Content of a TEF entry.
+
+=attribute http://purl.org/dc/terms/format
+short-name: $format
+
+Textual representation of the format, probably of text,
+probably in the MIME "<type>/<subtype>" format.
+
+e.g. "text/html"
 
 =task
 status: todo
-$text/type: text/org
+$content/$format: text/org
 
 the tef-mode keybindings should be customizable I think, or be a menu system thing.
 
@@ -185,3 +206,9 @@ Use an indirect buffer for editing entry as org.
 status: todo
 
 Fix up TEF mode more.
+
+
+=task
+status: todo
+
+Syntax highlighting in TEF mode?
