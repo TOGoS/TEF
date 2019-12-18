@@ -46,3 +46,27 @@ Some examples:
   to record e.g. [which stains were used on which pieces of wood](https://gitlab.com/TOGoS/ProjectNotes2/blob/master/2018/StainTest/StainedItems.tef).
 
 This repo may eventually include libraries for parsing.
+
+
+## Syntax
+
+Lines beginning with "=" start a new entry.
+A sequence of non-whitespace characters immediately following the "=", e.g. "log" in "=log",
+indicates the type of object being declared.
+This string will be called "$type-string".
+Following that, there may be whitespace, and more characters.
+This part is commonly used as an identifier,
+and will be called "$id-string".
+
+Following the beginning of an entry is the header block,
+terminated by a blank line, end of file, or the start of a new entry.
+The header block sonsists of series of headers of
+the format "<key>: <value>" and/or comment lines, which start with "#".
+Header lines that start with whitespace are considered extensions
+to the previous line, following the
+'long header fields' rules as described in [RFC822](https://tools.ietf.org/html/rfc822#section-3.1.1)
+(i.e. lines are concatenated, minus the LF or CRLF characters between them).
+
+Following the blank line following the header block is the "$content" of the entry.
+Text is verbatim and includes the newline before the next "=", if any.
+There is no escaping mechanism.
