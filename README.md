@@ -117,6 +117,8 @@ An array has a length; that's an attribute.
 It also contains objects; those are components.
 Some languages, e.g. JavaScript and Lua, do not make this distinction.
 I think that is a mistake.
+What if you are mapping dictionary words to their definitions,
+and one of the words is "prototype"?  Things get confusing.
 
 ### Namespacing of keys
 
