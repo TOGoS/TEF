@@ -53,15 +53,15 @@ This repo may eventually include libraries for parsing.
 Basically:
 
 ```
-=<type> [<id>]
+=[<type>][ <id>]
 <header-key>: <header-value>
 [<any number of headers>]
 
 <content>
 ```
 
-Lines beginning with "=" start a new entry.
-A sequence of non-whitespace characters immediately following the "=", e.g. "log" in "=log",
+Lines beginning with "`=`" start a new entry.
+A sequence of non-whitespace characters immediately following the "`=`", e.g. "`log`" in "`=log`",
 indicates the type of object being declared.
 Following that, there may be whitespace, and more characters.
 This part is commonly used as an identifier.
@@ -69,20 +69,23 @@ This part is commonly used as an identifier.
 Following the beginning of an entry is the header block,
 terminated by a blank line, end of file, or the start of a new entry.
 The header block sonsists of series of headers of
-the format "<key>: <value>" and/or comment lines, which start with "#".
+the format "`<key>: <value>`" and/or comment lines, which start with "`#`".
 Header lines that start with whitespace are considered extensions
 to the previous line, following the
 'long header fields' rules as described in [RFC822](https://tools.ietf.org/html/rfc822#section-3.1.1)
 (i.e. lines are concatenated, minus the LF or CRLF characters between them).
 
-Following the blank line following the header block is the "tef:content" of the entry.
-Text is verbatim and includes the newline before the next "=", if any.
+Following the blank line following the header block is the content of the entry
+(conceptually, the ```tef:content``` attribute of the entry).
+Text is verbatim and includes the newline before the next "`=`", if any.
 There is no escaping mechanism.
 
 A simple parser might not give any further meaning to keys.
-
 But for purposes of automatic conversion to RDF,
-let's give names structure...
+let's give names structure.
+
+Characters reserved for special meaning in keys are
+"`:`" (for namespacing), "`.`" (for attributes), and "`/`" (for components).
 
 ### Sub-attributes and sub-components
 
@@ -135,12 +138,16 @@ which that the TEF parser by itself can't assign meaning to.
 
 - ```tef:type-string``` :: The string (if any) immediately following the "="
 - ```tef:id-string``` :: The string (if any) immediately following the space after the type string
-- ```tef:content``` :: The foll content of the entry, including any trailing newlines;
-  no encoding is assumed.
-- ```tef:content-type``` :: MIME type of the content, intentionally defined this way
-  instead of e.g. ```tef:content.tef:type``` to make life easy for simple parsers.
+- ```tef:content``` :: The foll content of the entry; no encoding is assumed.
+- ```tef:content-type``` :: MIME type of the content
 - ```tef:content-encoding``` :: No encodings defined, but I'm reserving this header
   in case I ever need a way to encode binary data or lines that start with "=".
 - ```tef:comment``` :: A syntactic comment about this entry
+
+```tef:content-type```, and ```tef:content-encoding```,
+while conceptually subattributes of the ```tef:content``` attribute value,
+are given these shorthand names, as opposed to e.g. ```tef:content.tef:mime-type```
+because this is a very common case, and to keep things looking simple
+for the simple parsers who treat the entire key as an atomic string.
 
 Namespacing applies to each component of a key, not to the entire key.
