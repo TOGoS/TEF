@@ -138,7 +138,7 @@ but one that wants to extract meaning can use the prefix to help it map the key 
 
 The prefix "tef:" is reserved for syntax-level information.
 i.e. pieces such as the type, ID, and content strings,
-which that the TEF parser by itself can't assign meaning to.
+which the TEF parser by itself can't assign meaning to.
 
 - ```tef:type-string``` :: The string (if any) immediately following the "="
 - ```tef:id-string``` :: The string (if any) immediately following the space after the type string
