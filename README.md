@@ -50,13 +50,21 @@ This repo may eventually include libraries for parsing.
 
 ## Syntax
 
+Basically:
+
+```
+=<type> [<id>]
+<header-key>: <header-value>
+[<any number of headers>]
+
+<content>
+```
+
 Lines beginning with "=" start a new entry.
 A sequence of non-whitespace characters immediately following the "=", e.g. "log" in "=log",
 indicates the type of object being declared.
-This string will be called "$type-string".
 Following that, there may be whitespace, and more characters.
-This part is commonly used as an identifier,
-and will be called "$id-string".
+This part is commonly used as an identifier.
 
 Following the beginning of an entry is the header block,
 terminated by a blank line, end of file, or the start of a new entry.
@@ -67,6 +75,72 @@ to the previous line, following the
 'long header fields' rules as described in [RFC822](https://tools.ietf.org/html/rfc822#section-3.1.1)
 (i.e. lines are concatenated, minus the LF or CRLF characters between them).
 
-Following the blank line following the header block is the "$content" of the entry.
+Following the blank line following the header block is the "tef:content" of the entry.
 Text is verbatim and includes the newline before the next "=", if any.
 There is no escaping mechanism.
+
+A simple parser might not give any further meaning to keys.
+
+But for purposes of automatic conversion to RDF,
+let's give names structure...
+
+### Sub-attributes and sub-components
+
+We might also want to indicate attributes of attributes,
+as well as 'components'.
+
+For these, let's use a dot and slash, respectively:
+
+```
+=person Joe
+name: Joe
+name.length: 3
+name/2: e
+
+```
+
+What exactly constitues a sub-attribute vs a sub-component is up to the application,
+but for the sake of the above example, let's say
+a component of a string is a character.
+
+Theoretical aside: What's the difference between an attribute and a component?
+Your height is an attribute, while your heart is a component.
+For computer data structures the distinction is fuzzy because
+we often mix data and metadata, but think of collection types:
+arrays and maps.
+An array has a length; that's an attribute.
+It also contains objects; those are components.
+Some languages, e.g. JavaScript and Lua, do not make this distinction.
+I think that is a mistake.
+
+### Namespacing of keys
+
+A TEF entry is assumed to represent some abstract object
+with attributes.
+The meaning of the content of the entry is not defined by the TEF syntax;
+it might be notes about the object, or, if the object represents a journal entry,
+it might be literally the object's content.
+So how should a TEF parser pass on that information?
+And how can we indicate metadata about the content?
+
+Current proposal: Treat prefixes of the format <code>identifier + ":"</code>
+as similar to XML namespace prefixes.
+A simple parser can just pass them through,
+but one that wants to extract meaning can use the prefix to help it map the key to a 'long name'
+(i.e. an RDF predicate name).
+
+The prefix "tef:" is reserved for syntax-level information.
+i.e. pieces such as the type, ID, and content strings,
+which that the TEF parser by itself can't assign meaning to.
+
+- ```tef:type-string``` :: The string (if any) immediately following the "="
+- ```tef:id-string``` :: The string (if any) immediately following the space after the type string
+- ```tef:content``` :: The foll content of the entry, including any trailing newlines;
+  no encoding is assumed.
+- ```tef:content-type``` :: MIME type of the content, intentionally defined this way
+  instead of e.g. ```tef:content.tef:type``` to make life easy for simple parsers.
+- ```tef:content-encoding``` :: No encodings defined, but I'm reserving this header
+  in case I ever need a way to encode binary data or lines that start with "=".
+- ```tef:comment``` :: A syntactic comment about this entry
+
+Namespacing applies to each component of a key, not to the entire key.

@@ -1,10 +1,10 @@
 =narration
-$content/$format: text/plain
+tef:content-type: text/plain
 
 Hi, and welcome to this TEF file of random stuff.
 
 =log 2019-12-11
-$content/$format: text/plain
+tef:content-type: text/plain
 
 I want to be able to edit parts of .tef files as org files.
 Maybe I can do this with narrowing: https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html
@@ -29,14 +29,14 @@ The database can be rebuilt any time.
 
 =quote
 collected: 2019-12-11
-source-name: Alan Watts
-source-ref: https://www.youtube.com/watch?v=h6r7NTLmN0I
+source.name: Alan Watts
+source.ref: https://www.youtube.com/watch?v=h6r7NTLmN0I
 
 Money doesn't buy pleasure, ever.  You need skill.
 
 
 =example An org-formatted entry
-$content/$format: text/org
+tef:content-type: text/org
 
 ** Header 2
 *** Header 3
@@ -45,7 +45,7 @@ Hopefully this doesn't mess
 
 
 =example An different org-formatted entry, with a table
-$content/$format: text/org
+tef:content-type: text/org
 comment: It's tricky to edit org tables without being in org-mode.
 comment: Therefore I'd like to be able to easily edit org chunks within TEF files!
 
@@ -102,21 +102,26 @@ I would run it by default except that would be a huge vulnerability.
 I could use that for my exercise log file.
 
 =log 2019-12-11T13:39:08-06:00
-$content/$format: text/org
+tef:content-type: text/org
 
-~$content~, ~$content/$format~, ~$content/$encoding~ headers.
+~tef:content~, ~tef:content-type~, ~tef:content-encoding~ headers.
 
-Dollar sign indicates that these fields are 'syntactic',
+The "tef:" prefix indicates that these fields are 'syntactic',
 they are about the TEF representation of an object,
 rather than the object itself.
-This kind of jives with "$ref" having special meaning in JSON objects
-and "$"-prefixed 'special' properties in the Homie MQTT convention
-(though I think Homie went overboard with the dollar signs).
+
+(Previously I was saying to use a dollar sign for this,
+e.g. "$content/$type", which kind of jives with "$ref" having special meaning in JSON objects
+and "$"-prefixed 'special' properties in the Homie MQTT convention,
+but "tef:content-type" just feels cleaner/easier-to-remember,
+and also hints at generalized namespace prefixes,
+which may be useful for automatic conversion to RDF.)
 
 Similarly, a 'comment' header would be passed on to the application,
-whereas '$comment' is about the TEF encoding of the object
+whereas 'tef:comment' is about the TEF encoding of the object
 (though '#'-prefixed lines would accomplish the same thing).
-And a '=$narration' entry is TEF-level narration.
+And a '=tef:narration' entry is syntactic-level narration;
+i.e. narration about the TEF file itself, rather than about whatever it represents.
 
 In general, "$"-prefixed entry types and attributes should
 not be presented to the application, with the exception of ~$content~,
@@ -184,7 +189,7 @@ e.g. "text/html"
 
 =task
 status: todo
-$content/$format: text/org
+tef:content-type: text/org
 
 the tef-mode keybindings should be customizable I think, or be a menu system thing.
 
