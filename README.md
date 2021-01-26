@@ -54,8 +54,9 @@ Basically:
 
 ```
 =[<type>][ <id>]
-<header-key>: <header-value>
-[<any number of headers>]
+[<header1-key>: <header1-value>]
+[<header2-key>: <header2-value>]
+[...]
 
 <content>
 ```
@@ -70,6 +71,7 @@ Following the beginning of an entry is the header block,
 terminated by a blank line, end of file, or the start of a new entry.
 The header block sonsists of series of headers of
 the format "`<key>: <value>`" and/or comment lines, which start with "`#`".
+The space after the colon is required, as keys may contain colons.
 Header lines that start with whitespace are considered extensions
 to the previous line, following the
 'long header fields' rules as described in [RFC822](https://tools.ietf.org/html/rfc822#section-3.1.1)
@@ -126,7 +128,7 @@ it might be literally the object's content.
 So how should a TEF parser pass on that information?
 And how can we indicate metadata about the content?
 
-Current proposal: Treat prefixes of the format <code>identifier + ":"</code>
+Current proposal: Treat prefixes of the format ```<identifier>:"```
 as similar to XML namespace prefixes.
 A simple parser can just pass them through,
 but one that wants to extract meaning can use the prefix to help it map the key to a 'long name'
