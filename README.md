@@ -155,3 +155,19 @@ because this is a very common case, and to keep things looking simple
 for the simple parsers who treat the entire key as an atomic string.
 
 Namespacing applies to each component of a key, not to the entire key.
+
+
+## RDF Namespace
+
+If we want to get formal...
+
+- ```http://ns.nuke24.net/TEF/```
+- ```http://ns.nuke24.net/TEF/typeString``` - type string of an entry
+- ```http://ns.nuke24.net/TEF/idString``` - ID string of an entry
+- ```http://ns.nuke24.net/TEF/content``` - body text of an entry
+  - ```content-type``` and ```content-encoding``` don't need to have mappings, as ```content-type``` actually specifies
+    ```http://purl.org/dc/terms/format``` on the string itself, and ```content-encoding``` should be handled by the parser
+    (the content should be decoded before passed back to the application).
+    But for the sake of allowing parsers to represent what they've parsed without having to know those rules,
+    ```http://ns.nuke24.net/TEF/contentType``` and ```http://ns.nuke24.net/TEF/contentEncoding``` can be used.
+- ```http://ns.nuke24.net/TEF/comment``` - arbitrary comment about this entry
