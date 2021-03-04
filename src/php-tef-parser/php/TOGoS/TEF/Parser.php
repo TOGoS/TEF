@@ -20,6 +20,47 @@ interface TOGoS_TEF_LineSink {
 	public function close();
 }
 
+class TOGoS_TEF_Parser implements TOGoS_TEF_LineSink {
+	const STATE_INITIAL = 'initial';
+	const STATE_HEADERS = 'headers';
+	const STATE_CONTENT = 'content';
+	
+	protected $state = 'none';
+	
+	protected $parserSinks = array();
+	public function pipe(TOGoS_TEF_ParserSink $sink) {
+		$this->parserSinks[] = $sink;	
+	}
+	
+	public function sourcePosition($filename, $lineNumber) { }
+	public function __invoke($line) {
+		if( preg_match('/^=([^\s]*)(?:\s+(.*))?$/', $line, $bif) ) {
+			if( $this->state != self::STATE_INITIAL ) {
+				foreach( $this->parserSinks as $sink ) $sink->closeEntry();
+			}
+			$typeString = $bif[1];
+			$idString = rtrim($bif[2]);
+			foreach( $this->parserSinks as $sink ) $sink->openEntry($typeString, $idString);
+			$this->state = self::STATE_HEADERS;
+		} else if( $this->state == self::STATE_CONTENT ) {
+			foreach( $this->parserSinks as $sink ) $sink->text($line);
+		} else if( $this->state == self::STATE_HEADERS ) {
+			if( preg_match('/^#/', $line) ) {
+				// Comment line; ignore
+			} else if( preg_match('/^(.+?):\s+(.*)$/', $line, $bif) ) {
+				// TODO: handle multi-line headers!
+				foreach( $this->parserSinks as $sink ) $sink->header($bif[1], rtrim($bif[2]));
+			} else if( trim($line) == '' ) {
+				$this->state = self::STATE_CONTENT;
+			}
+		} else {
+			// Do nothing I guess!
+			// Though someday may want to parse file headers, or have a separate mode for that?
+		}
+	}
+	public function close() { }
+}
+
 class TOGoS_TEF_LinePrinter implements TOGoS_TEF_LineSink {
 	public $shouldEmitSourceLocations = false;
 	protected $sourceFilename;
@@ -57,19 +98,19 @@ class TOGoS_TEF_LineSplitter {
 			$sink->sourcePosition($this->sourceFilename, $this->sourceLineNumber);
 			call_user_func($sink, $this->currentLine);
 		}
-		$this->currentLine = "";
+		$this->currentLine = '';
 	}
 	
 	public function __invoke($chars) {
 		$currentPos = 0;
 		while( ($nextNewlinePos = strpos($chars, "\n", $currentPos)) !== false ) {
-			$endPos = $nextNewlinePos+1;
-			$segment = substr($chars, $currentPos, $endPos-$currentPos);
+			$nextLinePos = $nextNewlinePos+1;
+			$segment = substr($chars, $currentPos, $nextLinePos-$currentPos);
 			// echo "Read ".strlen($segment)."-byte segment: ".json_encode($segment)."\n";
 			$this->currentLine .= $segment;
 			$this->processCurrentLine();
 			++$this->sourceLineNumber;
-			$currentPos = $endPos;
+			$currentPos = $nextLinePos;
 		}
 		$this->currentLine .= substr($chars, $currentPos, strlen($chars)-$currentPos);
 	}
@@ -78,13 +119,3 @@ class TOGoS_TEF_LineSplitter {
 		foreach( $this->lineSinks as $sink ) $sink->close();
 	}
 }
-
-$linePrinter = new TOGoS_TEF_LinePrinter();
-$linePrinter->shouldEmitSourceLocations = true;
-
-$lineSplitter = new TOGoS_TEF_LineSplitter();
-$lineSplitter->pipe($linePrinter);
-while( ($data = fread(STDIN,10)) !== false and $data !== '' ) {
-	$lineSplitter->__invoke($data);
-}
-$lineSplitter->close();
