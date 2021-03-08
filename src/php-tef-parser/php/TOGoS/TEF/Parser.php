@@ -58,7 +58,11 @@ class TOGoS_TEF_Parser implements TOGoS_TEF_LineSink {
 			// Though someday may want to parse file headers, or have a separate mode for that?
 		}
 	}
-	public function close() { }
+	public function close() {
+		if( $this->state != self::STATE_INITIAL ) {
+			foreach( $this->parserSinks as $sink ) $sink->closeEntry();
+		}
+	}
 }
 
 class TOGoS_TEF_LinePrinter implements TOGoS_TEF_LineSink {
