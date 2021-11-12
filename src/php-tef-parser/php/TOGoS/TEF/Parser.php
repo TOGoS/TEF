@@ -34,6 +34,7 @@ class TOGoS_TEF_Parser implements TOGoS_TEF_LineSink {
 	
 	public function sourcePosition($filename, $lineNumber) { }
 	public function __invoke($line) {
+		// TODO: Handle '==' lines properly!
 		if( preg_match('/^=([^\s]*)(?:\s+(.*))?$/', $line, $bif) ) {
 			if( $this->state != self::STATE_INITIAL ) {
 				foreach( $this->parserSinks as $sink ) $sink->closeEntry();
