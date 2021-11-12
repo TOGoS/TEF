@@ -264,5 +264,5 @@ in case you want to want to represent them as RDF
 ### 0.2.0
 
 - Allow escaping of "`=`" with another "`=`"
-- Define `tef:content-length`
+- Define `tef:content-length`, `tef:version`, `entryScope`, and `sourceLocation`
 - Make up a version number
