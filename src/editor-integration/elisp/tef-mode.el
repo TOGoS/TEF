@@ -68,8 +68,8 @@
 	  (,tef-mode-entry-line-regex 2 'font-lock-type-face nil t)
 	  (,tef-mode-entry-line-regex 3 'font-lock-function-name-face  nil t)
 	  ("^#[^ !\n][^\n]*$" 0 'font-lock-warning-face)
-	  (,tef-mode-comment-line-regex 1 'font-lock-comment-face nil t)
-	  (,tef-mode-comment-line-regex 2 'font-lock-comment-delimiter-face nil t)
+	  (,tef-mode-comment-line-regex 1 'font-lock-comment-delimiter-face nil t)
+	  (,tef-mode-comment-line-regex 2 'font-lock-comment-face nil t)
 	  (,tef-mode-header-regex 1 'font-lock-builtin-face nil t)
 	  (,tef-mode-header-regex 2 'font-lock-variable-name-face nil t)
 	  (,tef-mode-header-regex 3 (list 'face 'font-lock-string-face 'font-lock-multiline t) nil t)
@@ -86,4 +86,5 @@
   (setq font-lock-defaults '(tef-mode-highlights t))
   (local-set-key (kbd "C-c C-e e o") 'tef-edit-entry-as-org))
 
-(add-to-list 'auto-mode-alist '("\\.tef\\'" . tef-mode))
+;; this should be done outside of this script so that tef-mode can be autoloaded:
+;;(add-to-list 'auto-mode-alist '("\\.tef\\'" . tef-mode))
