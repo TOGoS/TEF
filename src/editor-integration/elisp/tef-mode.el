@@ -38,7 +38,7 @@
 ;; usually scans just part of the buffer, and it can miss a multi-line
 ;; construct that crosses the line boundary where the scan starts."
 
-(setq tef-mode-regular-header-key-regex "\\(?:[^:\n]\\|:[^[:blank:]\n]\\)+")
+(setq tef-mode-regular-header-key-regex "\\(?:[^[:blank:]:\n]\\|:[^[:blank:]\n]\\)+")
 (setq tef-mode-header-value-regex "\\(?:[^\n]\\|\n[[:blank:]]\\)*")
 
 (setq tef-mode-header-regex
