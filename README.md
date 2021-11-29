@@ -1,4 +1,4 @@
-# TOGoS's Entry Format (TEF) version 0.2.0
+# TOGoS's Entry Format (TEF) version 0.3.0
 
 A file format designed to store a series of objects in flexible and human and machine-readable way,
 inspired by Perl POD and MIME.
@@ -83,6 +83,15 @@ Basically:
 <content>
 ```
 
+TEF is a line-oriented format, where LF ends a line.
+Carriage returns ('CR's) are sort-of allowed,
+but when there is ambiguity they will be treated as content.
+e.g. in "some-header: some-value" + CRLF, the CR will be considered part of the header value,
+"some-value" + CR.
+Parsers may have a opt-in 'text mode' that ignores CRs,
+maybe specified by a special "tef:parse-flags" header (TBD),
+or by the version (TEF v0.2.0 was looser with whitespace interpretation).
+
 "`==`" escapes an equal sign at the beginning of a line.
 Otherwise, lines beginning with "`=`" start a new entry
 A sequence of non-whitespace characters immediately following the "`=`", e.g. "`log`" in "`=log`",
@@ -96,15 +105,24 @@ The header block sonsists of series of headers of
 the format "`<key>: <value>`" and/or comment lines, which start with "`# `" or "`#!`".
 The space after the colon is required, as keys may contain colons.
 Header lines that start with whitespace are considered extensions
-to the previous line, following the
-'long header fields' rules as described in [RFC822](https://tools.ietf.org/html/rfc822#section-3.1.1)
-(i.e. lines are concatenated, minus the LF or CRLF characters between them).
+to the previous line, and the newline and *all but the first whitespace character*
+of the continuation line are considered part of the header value's text.
+
+(change from v0.2.0-v0.3.0: v0.2.0 specified that multiline header values
+would be interpreted as described in [RFC822](https://tools.ietf.org/html/rfc822#section-3.1.1),
+i.e. lines are concatenated, minus the LF or CRLF characters between them.
+I decided it would be more useful if the newlines and whitespace were preserved,
+as that allows arbitrary data to be encoded in headers).
 
 Following the blank line following the header block is the content of the entry
 (conceptually, the ```tef:content``` attribute of the entry).
-Text is verbatim and includes the newline before the next "`=`", if any.
-Lines starting with "`=`" can be escaped by prefixing with another "`=`",
-as mentioend earlier.
+Aside from "`==`"-escaped "`=`" characters,
+text is verbatim.  Everything up to but not including the next `LF + "="` sequence
+or end of file (whichever comes first).
+
+(change from v0.2.0-v0.3.0: v0.2.0 specifieed that the LF before a '=' should be included,
+but that makes it difficult to encode data that doesn't end with a LF,
+so for v0.3.0 I specified that the last LF is *not* included in the content)
 
 A simple parser might not give any further meaning to keys.
 But for purposes of automatic conversion to RDF,
