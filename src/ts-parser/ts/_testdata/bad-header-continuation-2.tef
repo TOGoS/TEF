@@ -1,0 +1,4 @@
+=some-entry entry-with-different-invalid-header-continuation
+foo: bar
+# comment
+ baz

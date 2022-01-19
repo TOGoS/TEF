@@ -1,0 +1,2 @@
+=some-entry entry-with-invalid-header-continuation
+ foo: bar

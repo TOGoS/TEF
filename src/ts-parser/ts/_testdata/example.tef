@@ -1,0 +1,20 @@
+=some-entry-type some-id
+some-key-1: some-value-1
+# EXPECT-NEXT-TOKEN: {"type":"header", "key":"some-key-2", "value":"some-value-2"}
+some-key-2: some-value-2
+some-key-3: some-value-3
+	some-value-3 part2
+
+Some content
+Some content 2
+==Some content 3
+=some-entry-type-2 some-id-2
+# EXPECT-NEXT-TOKEN: {"type":"header", "key":"=some-key-4", "value":"some-value-4"}
+==some-key-4: some-value-4
+=some-entry some-content-4
+
+More content, this time ended with a LF.
+
+=some-entry some-content-5
+
+More content, this time ended by EOF
