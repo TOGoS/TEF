@@ -284,3 +284,22 @@ in case you want to want to represent them as RDF
 - Allow escaping of "`=`" with another "`=`"
 - Define `tef:content-length`, `tef:version`, `entryScope`, and `sourceLocation`
 - Make up a version number
+
+### 0.3.0
+
+- Specify that newline characters in multi-line header values are preserved;
+  i.e. everything except the first whitespace character of continuation lines
+  and the final newline before the next header
+  is literally part of the header value.
+- Specify that final linefeed character of preceding an un-escaped "="
+  is *not* part of the entry's content, but considered part of the boundary,
+  allowing content to be descbibed that does not end with a LF character.
+  - Note that, at least as far as 0.3.0 as specified, the trailing LF character
+    *is* part of the content if it's followed by the end of the TEF file.
+    This has some nice aesthetic implications, but also the not-so-nice
+    implications when concatenating TEF files that one needs to be careful
+    to make sure there is a LF character inserted between the last entry
+    of the first file and the first of the second.
+  - A way to solve the ambuiguity would be to declare a standard 'content-length'
+    attribute which can be used to either trim off or add a trailing newline
+    if the parser got it wrong.
