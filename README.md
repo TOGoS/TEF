@@ -187,34 +187,40 @@ but one that wants to extract meaning can use the prefix to help it map the key 
 (i.e. an RDF predicate name).
 
 The prefix "tef:" is reserved for syntax-level information
-(and maps roughly to the "http://ns.nuke24.net/TEF/" xmlns).
+(and maps roughly to the "http://ns.nuke24.net/TEF/" xmlns,
+but with dash-separated names converted to camelCase).
 i.e. pieces such as the type, ID, and content strings,
 which the TEF parser by itself can't assign meaning to.
 
 - ```tef:version``` :: Version of TEF that was followed for this file, optionally indicated as a file-level header
 - ```tef:type-string``` :: The string (if any) immediately following the "="
 - ```tef:id-string``` :: The string (if any) immediately following the space after the type string
-- ```tef:content``` :: The foll content of the entry *after decoding*.
+- ```tef:content``` :: The full content of the entry *after decoding*.
 - ```tef:content-type``` :: MIME type of the content
 - ```tef:content-length``` :: Length of content, in bytes.  Note that, unlike the HTTP 'content-length' header,
   this indicates the length of the content that has been encoded
   (by applying whatever content-encoding and escaping newline+"`=`" sequences),
   not the number of bytes in the TEF stream that represent the content.
-  Indicating content length can resolve ambiguity when the conceptual content does not end with a newline,
-  but yet a newline must appear in the TEF stream before the next entry line.
+  i.e. this won't affect parsing of the TEF stream, but only whether
+  bytes that may have otherwise been considered part of the content
+  are trimmed off, or an extra LF added, before ```tef:content``` is known
 - ```tef:content-encoding``` :: No encodings defined, but I'm reserving this header
   in case I ever need a way to encode binary data.
   Any encoding specified is in addition to "`=`" escaping, which is always implied.
 - ```tef:comment``` :: A syntactic comment about this entry
 
-```tef:content-type```, and ```tef:content-encoding```,
-while conceptually subattributes of the ```tef:content``` attribute value,
+```tef:content-type``` while conceptually a sub-attributes of the ```tef:content``` value,
 are given these shorthand names, as opposed to e.g. ```tef:content.tef:mime-type```
 because this is a very common case, and to keep things looking simple
 for the simple parsers who treat the entire key as an atomic string.
 
 Namespacing applies to each component of a key, not to the entire key.
 
+It occurs to me that a standard way to indicate value encoding
+(which I think is one level above content-encoding)
+of both entry content and header values, would be useful.
+This would probably reference XML datatypes, as they indicate
+both the type of value and the mapping from value space to lexical (encoded as string) space.
 
 ## RDF Namespace
 
@@ -300,6 +306,3 @@ in case you want to want to represent them as RDF
     implications when concatenating TEF files that one needs to be careful
     to make sure there is a LF character inserted between the last entry
     of the first file and the first of the second.
-  - A way to solve the ambuiguity would be to declare a standard 'content-length'
-    attribute which can be used to either trim off or add a trailing newline
-    if the parser got it wrong.
