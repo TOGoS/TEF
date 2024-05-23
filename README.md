@@ -7,7 +7,9 @@ Useful when you want to record facts, thoughts, logs, or conceptual objects
 in a linear way for later processing, or just want a human-readable/writable
 format for data that's simpler than YAML but easier on the eyes than XML or JSON.
 
-Some details regarding edge cases as syntax-level metadata are still in flux,
+Some details regarding edge cases
+(like whether to preserve carriage returns at the end of header values)
+and syntax-level metadata are still in flux,
 but the basic syntax (when no escaping or multiline header values are needed)
 has been pretty stable since I started using it in the early '00s.
 
