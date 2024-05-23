@@ -4,7 +4,7 @@ A file format designed to store a series of objects in flexible and human and ma
 inspired by Perl POD and MIME.
 
 Useful when you want to record facts, thoughts, logs, or conceptual objects
-in a linear way for later processing, or just want a humand readable/writable
+in a linear way for later processing, or just want a human-readable/writable
 format for data that's simpler than YAML but easier on the eyes than XML or JSON.
 
 Some details regarding edge cases as syntax-level metadata are still in flux,
